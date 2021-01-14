@@ -33,7 +33,7 @@ async function createAuction(event, context) {
     }).promise();
   } catch(error) {
     console.error(error);
-    throw new createError.InternalServerError(error);
+    throw new createError.InternalServerError(error); //api-gateway 통해 실행되기에 에러던짐
   }
 
   return {
