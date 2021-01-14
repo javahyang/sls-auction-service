@@ -9,6 +9,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createAuction(event, context) {
   const { title } = event.body;
+  const { email } = event.requestContext.authorizer; // authorizer 통과 후 들어온 이벤트에는 JWT 의 사용자정보 있음
   const now = new Date();
   const endDate = new Date();
   endDate.setHours(now.getHours() + 1);
@@ -22,6 +23,7 @@ async function createAuction(event, context) {
     highestBid: {
       amount: 0,
     },
+    seller: email,
   }
 
   try {
