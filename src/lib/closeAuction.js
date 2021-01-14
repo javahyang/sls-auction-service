@@ -21,25 +21,35 @@ export async function closeAuction(auction) {
   const { title, seller, highestBid } = auction;
   const { amount, bidder } = highestBid;
 
-  // 입찰자가 없을 때 셀러에게 메시지 다르게
+  if (amount === 0) {
+    await sqs.sendMessage({
+      QueueUrl: process.env.MAIL_QUEUE_URL,
+      MessageBody: JSON.stringify({
+        subject: 'No bids on your auction item : (',
+        recipient: seller,
+        body: `Oh no! Your item "${title}" didn't get any bids. Better luck next time!`,
+      })
+    }).promise();
+    return;
+  }
 
   const notifySeller = sqs.sendMessage({
     QueueUrl: process.env.MAIL_QUEUE_URL,
     MessageBody: JSON.stringify({
       subject: 'Your item has been sold!',
       recipient: seller,
-      body: bidder ? `Woohoo! Your item "${title}" has been sold for $${amount}.` : `No body bid on your item`,
+      body: `Woohoo! Your item "${title}" has been sold for $${amount}.`,
     })
   }).promise();
 
-  const notifyBidder = bidder ? sqs.sendMessage({
+  const notifyBidder = sqs.sendMessage({
     QueueUrl: process.env.MAIL_QUEUE_URL,
     MessageBody: JSON.stringify({
       subject: 'You won an auction!',
       recipient: bidder,
       body: `What a great deal! You got yourself a "${title}" for $${amount}.`,
     })
-  }).promise() : true;
+  }).promise();
 
   return Promise.all([notifySeller, notifyBidder]);
 }
