@@ -13,5 +13,6 @@ export async function uploadPictureToS3(key, body) {
     })
     .promise()
 
-  return result
+  // 이미지 주소만 리턴
+  return result.Location
 }

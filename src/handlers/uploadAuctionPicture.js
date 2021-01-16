@@ -2,7 +2,8 @@ import middy from '@middy/core'
 import httpErrorHandler from '@middy/http-error-handler'
 import createError from 'http-errors'
 import { getAuctionById } from './getAuction'
-import { uploadPictureToS3 } from '../lib/uploadPictionToS3'
+import { uploadPictureToS3 } from '../lib/uploadPictureToS3'
+import { uploadPictureToDynamoDB } from '../lib/uploadPictureToDynamoDB'
 
 export async function uploadAuctionPicture(event) {
   const { id } = event.pathParameters
@@ -11,8 +12,10 @@ export async function uploadAuctionPicture(event) {
   const buffer = Buffer.from(base64, 'base64')
 
   try {
-    const uploadToS3Result = await uploadPictureToS3(auction.id + '.jpg', buffer)
-    console.log(uploadToS3Result)
+    const pictureUrl = await uploadPictureToS3(auction.id + '.jpg', buffer)
+    // pictureUrl
+    const result = await uploadPictureToDynamoDB(auction, pictureUrl)
+    console.log(result)
   } catch (error) {
     console.error(error)
     throw new createError.InternalServerError(error)
