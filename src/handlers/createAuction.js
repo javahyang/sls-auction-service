@@ -23,8 +23,7 @@ async function createAuction(event, context) {
     highestBid: {
       amount: 0
     },
-    seller: email,
-    picture: ''
+    seller: email
   }
 
   try {
