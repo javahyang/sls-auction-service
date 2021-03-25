@@ -2,7 +2,7 @@ AuctionsTableIAM:
   Effect: Allow
   Action:
     - dynamodb:PutItem
-    - dynamodb:Scan
+    - dynamodb:Scan # 전체 검색
     - dynamodb:GetItem
     - dynamodb:UpdateItem
     - dynamodb:Query
